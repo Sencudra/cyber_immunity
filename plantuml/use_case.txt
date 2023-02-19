@@ -1,0 +1,53 @@
+@startuml
+left to right direction
+
+:Клиент: as user
+:Служба безопасности: as sb
+:Техник: as tech
+:Уборщик: as cleaner
+:Злоумышленник: as intruder
+
+package "Автоматизированная камера хранения" {
+
+   package "Вендинговый автомат" {
+       usecase "Поместить вещи на хранение" as us_fill_lot
+       usecase "Забрать вещи с хранения" as us_free_lot
+       usecase "Оплатить хранение" as us_pay_for_lot
+       usecase "Управлять состоянием автомата" as us_control
+   }
+
+   package "Система удаленного мониторинга и управления" {
+      usecase "Просмотреть камеры и записи с камер автомата" as us_view_video
+      usecase "Просмотреть состояние автомата" as us_view_state
+      usecase "Просмотреть логи автомата" as us_view_logs
+      usecase "Раскатить обновление на автомате" as us_update
+   }
+
+}
+
+user--->us_fill_lot
+user--->us_free_lot
+user--->us_pay_for_lot
+user--->us_view_state : количество и параметры свободных лотов
+
+tech--->us_view_state : системная информация
+tech--->us_view_logs
+tech--->us_update
+tech--->us_control : за исключением открытия занятых лотов
+
+cleaner--->us_view_state : лоты, для которых нужна уборка
+cleaner--->us_control : открытие свободных лотов
+
+us_control<---sb
+us_view_state<---sb
+us_view_video<---sb
+us_free_lot<---sb : в присуствии владельца или полиции
+
+us_free_lot<---intruder
+us_control<---intruder
+us_view_video<---intruder
+us_view_state<---intruder
+us_view_logs<---intruder
+us_update<---intruder
+
+@enduml
